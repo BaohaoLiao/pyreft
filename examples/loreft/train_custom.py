@@ -26,7 +26,7 @@ from torch.utils.data import DataLoader
 from datasets import Dataset
 
 from task_config import task_config
-from dataset import LoReftGLUEDataset, LoReftSupervisedDataset
+from dataset_custom import LoReftGLUEDataset, LoReftSupervisedDataset
 from compute_metrics import compute_metrics
 
 from pyreft import (
