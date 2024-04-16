@@ -210,7 +210,7 @@ def main():
 
     all_eval_datasets = {}
     for eval_dataset in eval_datasets:
-        test_splits = training_args.test_split.split(";")
+        test_splits = data_args.test_split.split(";")
         all_eval_datasets[eval_dataset] = {}
         for split in test_splits:
             raw_eval = PeftDataset(
