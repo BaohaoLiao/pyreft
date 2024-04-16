@@ -192,9 +192,9 @@ def compute_metrics(
                 
                 # set generation args depending on task
                 generation_args = {
-                    "base": {"input_ids": inputs["input_ids"], "attention_mask": inputs["attention_mask"]},
+                    "input_ids": inputs["input_ids"], "attention_mask": inputs["attention_mask"],
                     # "unit_locations": {"sources->base": (None, intervention_locations)},
-                    "intervene_on_prompt": True,
+                    # "intervene_on_prompt": True,
                     "eos_token_id": tokenizer.eos_token_id,
                     "early_stopping": True,
                 }
