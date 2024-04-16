@@ -12,7 +12,8 @@ from transformers import (
     get_linear_schedule_with_warmup,
     set_seed,
     TrainingArguments,
-    Trainer
+    Trainer,
+    DataCollator
 )
 from transformers.trainer_utils import EvalPrediction
 import wandb
@@ -37,7 +38,7 @@ from pyreft import (
     ReftTrainerForSequenceClassification,
     NoreftIntervention,
     LoreftIntervention,
-    ReftDataCollatorCustom
+    ReftDataCollator
 )
 
 from peft import PeftModel, get_peft_model, TaskType, LoraConfig
@@ -261,7 +262,7 @@ def finetune(
             label_pad_token_id=-100,
             padding="longest"
         )
-    data_collator = ReftDataCollatorCustom(data_collator=data_collator_fn)
+    data_collator = DataCollator(data_collator=data_collator_fn)
 
     """
     # intervention config based on model type
