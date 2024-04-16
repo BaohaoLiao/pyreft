@@ -318,6 +318,7 @@ def finetune(
             init_lora_weights=True,
         )
         peft_model = get_peft_model(model, lora_config)
+        print(peft_model)
         peft_model.print_trainable_parameters()
 
     # for GLUE tasks, we enable gradients on the classifier head.
@@ -397,7 +398,8 @@ def finetune(
 
     # save model
     if save_model:
-        peft_model.save(f"{output_dir}/{run_name}")
+        #peft_model.save(f"{output_dir}/{run_name}")
+        trainer.save_model(f"{output_dir}/{run_name}")
 
     # ensure everything is in eval mode
     peft_model.model.eval()
