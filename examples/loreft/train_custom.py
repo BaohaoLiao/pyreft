@@ -316,8 +316,10 @@ def finetune(
 
     # train enables dropout but no grads.
     # this line might not be necessary since HF trainer enables this by default.
-    peft_model.model.train()
-    n_params = peft_model.count_parameters(include_model=False)
+    # peft_model.model.train()
+    # n_params = peft_model.count_parameters(include_model=False)
+    model_parameters = filter(lambda p: p.requires_grad, peft_model.parameters())
+    n_params = sum([np.prod(p.size()) for p in model_parameters])
 
     # start wandb logging
     if is_wandb:
