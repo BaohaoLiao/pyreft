@@ -28,7 +28,7 @@ from datasets import Dataset
 
 from task_config import task_config
 from dataset_custom import LoReftGLUEDataset, LoReftSupervisedDataset
-from compute_metrics import compute_metrics
+from compute_metrics_custom import compute_metrics
 
 from pyreft import (
     TaskType,

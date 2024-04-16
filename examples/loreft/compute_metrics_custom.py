@@ -27,6 +27,20 @@ from transformers.trainer_utils import (
 )
 from pyreft import ReftDataCollator
 
+from dataclasses import dataclass
+from typing import Dict, Sequence
+@dataclass
+class ReftDataCollatorCustom(object):
+    """Collate examples for ReFT."""
+
+    data_collator: DataCollator
+
+    def __call__(self, instances: Sequence[Dict]) -> Dict[str, torch.Tensor]:
+        batch_inputs = self.data_collator(instances)
+        return batch_inputs
+
+
+
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 logger = logging.get_logger(__name__)
@@ -93,7 +107,7 @@ def extract_output(pred, trigger=''):
     return output
 
 
-def make_data_collator(tokenizer, model) -> ReftDataCollator:
+def make_data_collator(tokenizer, model) -> ReftDataCollatorCustom:
     data_collator_fn = DataCollatorForSeq2Seq(
         tokenizer=tokenizer,
         model=model,
@@ -101,7 +115,7 @@ def make_data_collator(tokenizer, model) -> ReftDataCollator:
         padding="longest",
         max_length=2048,
     )
-    return ReftDataCollator(data_collator=data_collator_fn)
+    return ReftDataCollatorCustom(data_collator=data_collator_fn)
 
 
 def make_dataloader(dataset: Dataset, batch_size: int, collate_fn: DataCollatorForSeq2Seq, shuffle: bool) -> DataLoader:
@@ -147,7 +161,7 @@ def compute_metrics(
                     inputs[k] = v.to(device)
             
             # [layers, batch_size, positions]
-            intervention_locations = inputs["intervention_locations"].permute(1, 0, 2)
+            # intervention_locations = inputs["intervention_locations"].permute(1, 0, 2)
     
             if task == "glue":
     
@@ -174,12 +188,12 @@ def compute_metrics(
 
                 # repeat each batch by num_beams times in intervention locations
                 # -> [layers, batch_size * num_beams, positions]
-                intervention_locations = intervention_locations.repeat_interleave(num_beams, dim=1).tolist()
+                # intervention_locations = intervention_locations.repeat_interleave(num_beams, dim=1).tolist()
                 
                 # set generation args depending on task
                 generation_args = {
                     "base": {"input_ids": inputs["input_ids"], "attention_mask": inputs["attention_mask"]},
-                    "unit_locations": {"sources->base": (None, intervention_locations)},
+                    # "unit_locations": {"sources->base": (None, intervention_locations)},
                     "intervene_on_prompt": True,
                     "eos_token_id": tokenizer.eos_token_id,
                     "early_stopping": True,
