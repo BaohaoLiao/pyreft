@@ -240,7 +240,7 @@ class LoReftSupervisedDataset(ReftDataset):
                 attention_mask=self.attention_mask[i],
                 #intervention_locations=self.intervention_locations[i],
                 labels=self.labels[i],
-                id=self.id[i],
+                #id=self.id[i],
             )
         else:
             return dict(
