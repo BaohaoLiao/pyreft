@@ -37,7 +37,7 @@ from pyreft import (
     ReftTrainerForSequenceClassification,
     NoreftIntervention,
     LoreftIntervention,
-    ReftDataCollator
+    ReftDataCollatorCustom
 )
 
 from peft import PeftModel, get_peft_model, TaskType, LoraConfig
@@ -261,7 +261,7 @@ def finetune(
             label_pad_token_id=-100,
             padding="longest"
         )
-    data_collator = ReftDataCollator(data_collator=data_collator_fn)
+    data_collator = ReftDataCollatorCustom(data_collator=data_collator_fn)
 
     """
     # intervention config based on model type
