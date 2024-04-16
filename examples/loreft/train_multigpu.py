@@ -20,7 +20,7 @@ from transformers import (
 )
 from transformers.utils import send_example_telemetry
 from transformers.trainer_utils import get_last_checkpoint
-from peft import PeftModel, get_peft_model, TaskType, LoraConfig
+from src.peft import PeftModel, get_peft_model, TaskType, LoraConfig
 
 from task_config import task_config
 from dataset_multigpu import SupervisedDataset
