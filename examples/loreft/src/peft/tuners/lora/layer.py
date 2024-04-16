@@ -246,7 +246,7 @@ class LoraLayer(BaseTunerLayer):
 
         return result_dora
     
-    def _apply_rosa(self, x, lora_A, lora_B, scaling):
+    def _apply_rosa(self, x, lora_A, lora_B):
         lora_A_cos = lora_A.weight.squeeze().repeat_interleave(2).cos()
         lora_A_sin = lora_A.weight.squeeze().repeat_interleave(2).sin()
         lora_B_repeat = lora_B.weight.squeeze().repeat_interleave(2)
@@ -255,8 +255,8 @@ class LoraLayer(BaseTunerLayer):
         lora_A_sin = lora_B_repeat * lora_A_sin
     
         rotate_half_x = torch.stack([-x[..., 1::2], x[..., ::2]], dim=-1).reshape_as(x)
-        result = x * lora_A_cos + rotate_half_x * lora_A_sin
-        return scaling * result
+        x = x * lora_A_cos + rotate_half_x * lora_A_sin
+        return x
 
     def set_scale(self, adapter, scale):
         if adapter not in self.scaling:
@@ -530,11 +530,11 @@ class Linear(nn.Module, LoraLayer):
 
                 dropout = self.lora_dropout[active_adapter]
                 scaling = self.scaling[active_adapter]
-                x = x.to(lora_A.weight.dtype)
+                result = result.to(lora_A.weight.dtype)
 
                 if not self.use_dora[active_adapter]:
                     #result = result + lora_B(lora_A(dropout(x))) * scaling
-                    result = result + self._apply_rosa(x, lora_A, lora_B, scaling)
+                    result = self._apply_rosa(result, lora_A, lora_B)
                 else:
                     x = dropout(x)
                     result = result + self._apply_dora(x, lora_A, lora_B, scaling, active_adapter)
