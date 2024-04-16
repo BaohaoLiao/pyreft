@@ -98,6 +98,7 @@ def finetune(
     temperature: float,
     top_p: float,
     top_k: float,
+    use_lora: bool,
     args,
 ):
     """
