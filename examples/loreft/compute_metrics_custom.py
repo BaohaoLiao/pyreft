@@ -210,7 +210,7 @@ def compute_metrics(
                     generation_args["top_k"] = top_k
 
                 # generate with intervention on prompt
-                _, steered_response = intervenable.generate(**generation_args)
+                steered_response = intervenable.generate(**generation_args)
         
                 # detokenize in batch
                 actual_preds = tokenizer.batch_decode(steered_response, skip_special_tokens=True)
