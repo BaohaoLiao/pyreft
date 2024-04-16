@@ -20,7 +20,7 @@ from transformers import (
 )
 from transformers.utils import send_example_telemetry
 from transformers.trainer_utils import get_last_checkpoint
-from peft import get_peft_model, TaskType, LoraConfig
+from peft import PeftModel, get_peft_model, TaskType, LoraConfig
 
 from task_config import task_config
 from dataset_multigpu import SupervisedDataset
@@ -76,6 +76,8 @@ class ModelArguments:
             )
         },
     )
+    adapter_name_or_path: str = field(default=None)
+    lora_rank: int = field(default=1)
 
 
 @dataclass
@@ -247,17 +249,27 @@ def main():
         model.gradient_checkpointing_enable()
 
     # PEFT
-    target_modules = ["q_proj", "k_proj", "v_proj", "o_proj", "up_proj", "down_proj", "gate_proj"]
-    lora_config = LoraConfig(
-        task_type=TaskType.CAUSAL_LM,
-        inference_mode=False,
-        r=8,
-        lora_alpha=16,
-        lora_dropout=0.,
-        target_modules=target_modules,
-        init_lora_weights=True,
-    )
-    model = get_peft_model(model, lora_config)
+    if model_args.adapter_name_or_path is not None:
+        logger.info(f"Initialize LoRA from {model_args.adapter_name_or_path}")
+        model = PeftModel.from_pretrained(
+            model,
+            model_args.adapter_name_or_path,
+            is_trainable=True,
+            token=model_args.token,
+        )
+    else:
+        logger.info(f"Initialize LoRA in the default way")
+        target_modules = ["q_proj", "k_proj", "v_proj", "o_proj", "up_proj", "down_proj", "gate_proj"]
+        lora_config = LoraConfig(
+            task_type=TaskType.CAUSAL_LM,
+            inference_mode=False,
+            r=model_args.lora_rank,
+            #lora_alpha=16,
+            lora_dropout=0.,
+            target_modules=target_modules,
+            init_lora_weights=True,
+        )
+        model = get_peft_model(model, lora_config)
     logger.info(model)
     model.print_trainable_parameters()
 
@@ -308,6 +320,7 @@ def main():
     # Evaluate
     if training_args.do_eval:
         logger.info("*** Evaluate ***")
+        model.eval()
         eval_results = {}
         for dataset_name in eval_datasets:
             # split evalset into chunks
