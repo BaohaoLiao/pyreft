@@ -225,7 +225,6 @@ def main():
     eval_datasets = all_eval_datasets
 
     # Load model
-    device = "cuda" if torch.cuda.is_available() else "cpu"
     model = AutoModelForCausalLM.from_pretrained(
             model_args.model_name_or_path,
             low_cpu_mem_usage=True,
@@ -234,7 +233,6 @@ def main():
             revision=model_args.model_revision,
             token=model_args.token,
             trust_remote_code=model_args.trust_remote_code,
-            device_map=device,
         )
     config = model.config
 
