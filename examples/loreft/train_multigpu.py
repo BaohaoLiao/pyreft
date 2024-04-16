@@ -203,7 +203,7 @@ def main():
         tokenizer, 
         data_split="train", 
         seed=training_args.seed, 
-        max_n_example=training_args.max_train_samples,
+        max_n_example=data_args.max_train_samples,
     )
     trigger_tokens = train_dataset.trigger_tokens
     num_labels = train_dataset.num_labels
