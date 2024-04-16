@@ -206,6 +206,7 @@ def main():
         data_split="train", 
         seed=training_args.seed, 
         max_n_example=data_args.max_train_samples,
+        cache_dir=model_args.cache_dir
     )
     trigger_tokens = train_dataset.trigger_tokens
     num_labels = train_dataset.num_labels
@@ -222,6 +223,7 @@ def main():
                 data_split=split, 
                 seed=training_args.seed, 
                 max_n_example=data_args.max_eval_samples,
+                cache_dir=model_args.cache_dir
             )
             all_eval_datasets[eval_dataset][split] = [raw_eval, raw_eval.raw_dataset]
     eval_datasets = all_eval_datasets
