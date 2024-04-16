@@ -1,3 +1,4 @@
+import os
 from tqdm import tqdm
 from collections import defaultdict
 from copy import deepcopy
@@ -39,10 +40,12 @@ class SupervisedDataset(Dataset):
             print("loading data for dataset: ", data_path)
             if task in ["alpaca", "instruct", "ultrafeedback"] and data_split != "train":
                 task_dataset = load_dataset("tatsu-lab/alpaca_eval", "alpaca_eval")["eval"]
-            elif data_path.endswith(".json"):
-                task_dataset = load_dataset("json", data_files=data_path)[data_split]
+            #elif data_path.endswith(".json"):
+            #    task_dataset = load_dataset("json", data_files=data_path)[data_split]
+            #else:
+            #    task_dataset = load_dataset(data_path)[data_split]
             else:
-                task_dataset = load_dataset(data_path)[data_split]
+                task_dataset = load_dataset("json", data_files=os.path.join(data_path, f"{data_split}.json"))["train"]
         if max_n_example is not None:
             task_dataset = task_dataset.shuffle(seed=seed)
             task_dataset = task_dataset.select(range(max_n_example))
