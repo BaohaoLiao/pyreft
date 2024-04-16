@@ -109,6 +109,7 @@ class DataTrainingArguments:
     temperature: Optional[float] = field(default=None)
     top_p: Optional[float] = field(default=None)
     top_k: Optional[float] = field(default=None)
+    greedy_decoding: bool = field(default=False)
 
 
 def main():
