@@ -23,7 +23,6 @@ class SupervisedDataset(Dataset):
         dataset=None, 
         seed=42, 
         max_n_example=None,
-        cache_dir=None,
         **kwargs,
     ):
         super(SupervisedDataset, self).__init__()
@@ -39,11 +38,11 @@ class SupervisedDataset(Dataset):
         if dataset is None:
             print("loading data for dataset: ", data_path)
             if task in ["alpaca", "instruct", "ultrafeedback"] and data_split != "train":
-                task_dataset = load_dataset("tatsu-lab/alpaca_eval", "alpaca_eval", cache_dir=cache_dir)["eval"]
+                task_dataset = load_dataset("tatsu-lab/alpaca_eval", "alpaca_eval")["eval"]
             elif data_path.endswith(".json"):
-                task_dataset = load_dataset("json", data_files=data_path, cache_dir=cache_dir)[data_split]
+                task_dataset = load_dataset("json", data_files=data_path)[data_split]
             else:
-                task_dataset = load_dataset(data_path, cache_dir=cache_dir)[data_split]
+                task_dataset = load_dataset(data_path)[data_split]
         if max_n_example is not None:
             task_dataset = task_dataset.shuffle(seed=seed)
             task_dataset = task_dataset.select(range(max_n_example))
