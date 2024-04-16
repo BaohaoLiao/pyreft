@@ -28,4 +28,3 @@ from .dataset import (
     make_last_position_supervised_data_module,
     get_intervention_locations
 )
-from .dataset_custom import ReftDataCollator as ReftDataCollatorCustom

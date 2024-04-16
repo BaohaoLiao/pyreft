@@ -55,6 +55,18 @@ dtype_mapping = {
     "float8": "float8",
 }
 
+from dataclasses import dataclass
+from typing import Dict, Sequence
+@dataclass
+class ReftDataCollatorCustom(object):
+    """Collate examples for ReFT."""
+
+    data_collator: DataCollator
+
+    def __call__(self, instances: Sequence[Dict]) -> Dict[str, torch.Tensor]:
+        batch_inputs = self.data_collator(instances)
+        return batch_inputs
+    
 
 def finetune(
     act_fn: str,
@@ -262,7 +274,7 @@ def finetune(
             label_pad_token_id=-100,
             padding="longest"
         )
-    data_collator = DataCollator(data_collator=data_collator_fn)
+    data_collator = ReftDataCollatorCustom(data_collator=data_collator_fn)
 
     """
     # intervention config based on model type
