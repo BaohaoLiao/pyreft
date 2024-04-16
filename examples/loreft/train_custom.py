@@ -318,8 +318,9 @@ def finetune(
     # this line might not be necessary since HF trainer enables this by default.
     # peft_model.model.train()
     # n_params = peft_model.count_parameters(include_model=False)
-    model_parameters = filter(lambda p: p.requires_grad, peft_model.parameters())
-    n_params = sum([np.prod(p.size()) for p in model_parameters])
+    def count_parameters(model):
+        return sum(p.numel() for p in model.parameters() if p.requires_grad)
+    n_params = count_parameters(peft_model)
 
     # start wandb logging
     if is_wandb:
