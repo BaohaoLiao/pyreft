@@ -134,6 +134,9 @@ def main():
             raise ValueError("`token` and `use_auth_token` are both specified. Please set only the argument `token`.")
         model_args.token = model_args.use_auth_token
 
+    assert data_args.task in {"commonsense", "math", "alpaca", "instruct", "ultrafeedback", "glue", "gsm8k"}
+    assert data_args.task in task_config, f"Unrecognized task: {data_args.task}"
+
     # Sending telemetry. Tracking the example usage helps us better allocate resources to maintain them. The
     # information sent is the one passed as arguments along with your Python/PyTorch versions.
     send_example_telemetry("run_translation", model_args, data_args)
@@ -196,7 +199,6 @@ def main():
     tokenizer.pad_token = tokenizer.unk_token
 
     # Load dataset
-    assert data_args.task in task_config, f"Unrecognized task: {data_args.task}"
     train_datasets = task_config[data_args.task]["train_datasets"] if data_args.train_dataset is None else [data_args.train_dataset]
     # TODO: add glue task
     eval_datasets = task_config[data_args.task]["eval_datasets"] if data_args.eval_dataset is None else [data_args.eval_dataset]

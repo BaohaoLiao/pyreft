@@ -179,7 +179,7 @@ def main():
                 "the `--output_dir` or add `--overwrite_output_dir` to train from scratch."
             )
 
-     # Set seed before initializing model.
+    # Set seed before initializing model.
     set_seed(training_args.seed)
 
     # Load tokenizer
