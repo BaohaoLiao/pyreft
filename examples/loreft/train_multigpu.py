@@ -183,7 +183,7 @@ def main():
     # Load tokenizer
     tokenizer = AutoTokenizer.from_pretrained(
         model_args.tokenizer_name if model_args.tokenizer_name else model_args.model_name_or_path,
-        model_max_length=model_args.max_length,
+        model_max_length=data_args.max_length,
         cache_dir=model_args.cache_dir,
         revision=model_args.model_revision,
         token=model_args.token,
