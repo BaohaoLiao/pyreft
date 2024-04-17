@@ -20,6 +20,7 @@ from transformers import (
 )
 from transformers.utils import send_example_telemetry
 from transformers.trainer_utils import get_last_checkpoint
+from safetensors import safe_open
 
 from src2.peft import PeftModel, get_peft_model, TaskType, LoraConfig
 from task_config import task_config
@@ -78,6 +79,7 @@ class ModelArguments:
     )
     adapter_name_or_path: str = field(default=None)
     lora_rank: int = field(default=8)
+    ckpt_path_for_eval: str = field(default=None)
 
 
 @dataclass
@@ -321,6 +323,14 @@ def main():
     # Evaluate
     if training_args.do_eval:
         logger.info("*** Evaluate ***")
+        if model_args.ckpt_path_for_eval is not None:
+            logger.info(f"Load trained ckpt from {model_args.ckpt_path_for_eval}")
+            state_dict = {}
+            with safe_open(os.path.join(model_args.ckpt_path_for_eval, "model.safetensors"), framework="pt", device=0) as f:
+                for k in f.keys():
+                    state_dict[k] = f.get_tensor(k)
+            model.load_state_dict(state_dict, strict=True)
+            
         model.eval()
         eval_results = {}
         for dataset_name in eval_datasets:
