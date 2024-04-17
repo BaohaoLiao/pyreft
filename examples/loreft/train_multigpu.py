@@ -20,7 +20,8 @@ from transformers import (
 )
 from transformers.utils import send_example_telemetry
 from transformers.trainer_utils import get_last_checkpoint
-from src.peft import PeftModel, get_peft_model, TaskType, LoraConfig
+import src.peft as peft
+from peft import PeftModel, get_peft_model, TaskType, LoraConfig
 
 from task_config import task_config
 from dataset_multigpu import SupervisedDataset
@@ -77,7 +78,7 @@ class ModelArguments:
         },
     )
     adapter_name_or_path: str = field(default=None)
-    lora_rank: int = field(default=1)
+    lora_rank: int = field(default=8)
 
 
 @dataclass
