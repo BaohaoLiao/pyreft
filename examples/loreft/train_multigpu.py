@@ -324,7 +324,7 @@ def main():
     if training_args.do_eval:
         logger.info("*** Evaluate ***")
         if model_args.ckpt_path_for_eval is not None:
-            logger.info("Load trained ckpt from {model_args.ckpt_path_for_eval}")
+            logger.info(f"Load trained ckpt from {model_args.ckpt_path_for_eval}")
             state_dict = {}
             with safe_open(os.path.join(model_args.ckpt_path_for_eval, "model.safetensors"), framework="pt", device=0) as f:
                 for k in f.keys():
