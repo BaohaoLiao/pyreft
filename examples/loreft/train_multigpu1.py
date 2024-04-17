@@ -20,9 +20,8 @@ from transformers import (
 )
 from transformers.utils import send_example_telemetry
 from transformers.trainer_utils import get_last_checkpoint
-import src1.peft as peft
-from peft import PeftModel, get_peft_model, TaskType, LoraConfig
 
+from src1.peft import PeftModel, get_peft_model, TaskType, LoraConfig
 from task_config import task_config
 from dataset_multigpu import SupervisedDataset
 from compute_metrics_custom import compute_metrics
