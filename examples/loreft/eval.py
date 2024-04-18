@@ -299,6 +299,7 @@ def main():
     )
 
     logger.info("*** Evaluate ***")
+    logger.info(model.device)
     assert model.device == "cuda"
 
     def list_directories_with_prefix(path, prefix):
