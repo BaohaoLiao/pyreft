@@ -379,9 +379,13 @@ def main():
             json.dump(eval_results, json_file, indent=4)
 
         all_eval_results[ckpt_dir] = np.mean(list(eval_results.values()))
-    result_json_file_name = f"{training_args.output_dirt}/all_eval_results.json"
+    result_json_file_name = f"{training_args.output_dir}/all_eval_results.json"
     with open(result_json_file_name, 'w') as json_file:
             json.dump(all_eval_results, json_file, indent=4)
+
+    ckpt_path = os.path.join(training_args.output_dir, "model.safetensors")
+    logger.info(f"Delete ckpt {ckpt_path}") # save memory
+    os.remove(ckpt_path)
 
 if __name__ == "__main__":
     main()
