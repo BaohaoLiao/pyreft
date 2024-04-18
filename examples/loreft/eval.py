@@ -383,9 +383,9 @@ def main():
     with open(result_json_file_name, 'w') as json_file:
             json.dump(all_eval_results, json_file, indent=4)
 
-    ckpt_path = os.path.join(training_args.output_dir, "model.safetensors")
-    logger.info(f"Delete ckpt {ckpt_path}") # save memory
-    os.remove(ckpt_path)
+    #ckpt_path = os.path.join(training_args.output_dir, "model.safetensors")
+    #logger.info(f"Delete ckpt {ckpt_path}") # save memory
+    #os.remove(ckpt_path)
 
 if __name__ == "__main__":
     main()
