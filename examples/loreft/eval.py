@@ -298,6 +298,16 @@ def main():
         padding="longest",
     )
 
+    trainer = Trainer(
+        model=model,
+        tokenizer=tokenizer,
+        args=training_args,
+        train_dataset=train_dataset,
+        eval_dataset=None,
+        data_collator=data_collator,
+        compute_metrics=None,
+    )
+
     logger.info("*** Evaluate ***")
     logger.info(model.device)
     assert model.device == "cuda"
