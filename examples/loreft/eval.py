@@ -309,8 +309,8 @@ def main():
     )
 
     logger.info("*** Evaluate ***")
-    logger.info(next(model.parameters()).is_cuda)
-    assert model.device == "cuda"
+    logger.info(f"Evaluate on GPU: {next(model.parameters()).is_cuda}")
+    assert next(model.parameters()).is_cuda
 
     def list_directories_with_prefix(path, prefix):
         if not os.path.isdir(path):
