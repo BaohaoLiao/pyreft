@@ -329,8 +329,8 @@ def main():
         model.load_state_dict(state_dict, strict=True)
         model.save_pretrained(ckpt_dir)
 
-        logger.info(f"Delete ckpt {ckpt_path}") # save memory
-        os.remove(ckpt_path)
+        #logger.info(f"Delete ckpt {ckpt_path}") # save memory
+        #os.remove(ckpt_path)
 
         model.eval()
         eval_results = {}
