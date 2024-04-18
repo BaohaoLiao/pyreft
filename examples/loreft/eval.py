@@ -309,7 +309,7 @@ def main():
     )
 
     logger.info("*** Evaluate ***")
-    logger.info(model.device)
+    logger.info(next(model.parameters()).is_cuda)
     assert model.device == "cuda"
 
     def list_directories_with_prefix(path, prefix):
