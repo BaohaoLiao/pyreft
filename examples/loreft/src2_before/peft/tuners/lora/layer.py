@@ -527,6 +527,8 @@ class Linear(nn.Module, LoraLayer):
             result = self.base_layer(x, *args, **kwargs)
         else:
             if self.is_feedforward:
+                print("*********before", self.get_base_layer().weight.size())
+
                 for active_adapter in self.active_adapters:
                     if active_adapter not in self.lora_A.keys():
                         continue
@@ -538,6 +540,7 @@ class Linear(nn.Module, LoraLayer):
                 interm = self._apply_rosa(x, lora_A, lora_B).to(self.get_base_layer().weight.dtype)
                 result = self.base_layer(interm, *args, **kwargs)
             else:
+                print("*********after", self.get_base_layer().weight.size())
                 result = self.base_layer(x, *args, **kwargs)
                 torch_result_dtype = result.dtype
                 for active_adapter in self.active_adapters:
