@@ -80,6 +80,8 @@ class ModelArguments:
     adapter_name_or_path: str = field(default=None)
     lora_rank: int = field(default=8)
     ckpt_path_for_eval: str = field(default=None)
+    target_modules: str = field(default="q_proj;k_proj;v_proj;o_proj;up_proj;down_proj;gate_proj")
+    feedforward_modules: str = field(default="")
 
 
 @dataclass
@@ -264,8 +266,8 @@ def main():
         )
     else:
         logger.info(f"Initialize LoRA in the default way")
-        target_modules = ["q_proj", "k_proj", "v_proj", "o_proj", "up_proj", "down_proj", "gate_proj"]
-        feedforward_modules = ["down_proj"]
+        target_modules = model_args.target_modules.split(";")
+        feedforward_modules = model_args.feedforward_modules.split(";")
 
         lora_config = LoraConfig(
             task_type=TaskType.CAUSAL_LM,
