@@ -527,6 +527,12 @@ class Linear(nn.Module, LoraLayer):
             result = self.base_layer(x, *args, **kwargs)
         else:
             if self.is_feedforward:
+                for active_adapter in self.active_adapters:
+                    if active_adapter not in self.lora_A.keys():
+                        continue
+                    lora_A = self.lora_A[active_adapter]
+                    lora_B = self.lora_B[active_adapter]
+                
                 adapter_dtype = lora_A.weight.dtype
                 x = x.to(adapter_dtype)
                 interm = self._apply_rosa(x, lora_A, lora_B).to(self.get_base_layer().weight.dtype)
