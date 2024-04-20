@@ -79,6 +79,8 @@ class ModelArguments:
     )
     adapter_name_or_path: str = field(default=None)
     lora_rank: int = field(default=8)
+    target_modules: str = field(default="q_proj;k_proj;v_proj;o_proj;up_proj;down_proj;gate_proj")
+    feedforward_modules: str = field(default="")
 
 
 @dataclass
@@ -113,7 +115,7 @@ class DataTrainingArguments:
     top_p: Optional[float] = field(default=None)
     top_k: Optional[float] = field(default=None)
     greedy_decoding: bool = field(default=False)
-    rosa_type: int = field(default=1)
+    rosa_type: str = field(default="1")
 
 
 def main():
@@ -137,12 +139,14 @@ def main():
     assert data_args.task in {"commonsense", "math", "alpaca", "instruct", "ultrafeedback", "glue", "gsm8k"}
     assert data_args.task in task_config, f"Unrecognized task: {data_args.task}"
 
-    if data_args.rosa_type == 1:
+    if data_args.rosa_type == "1":
         from src.peft import PeftModel, get_peft_model, TaskType, LoraConfig
-    elif data_args.rosa_type == 2:
+    elif data_args.rosa_type == "2":
         from src1.peft import PeftModel, get_peft_model, TaskType, LoraConfig
-    elif data_args.rosa_type == 4:
+    elif data_args.rosa_type == "4":
         from src2.peft import PeftModel, get_peft_model, TaskType, LoraConfig
+    elif data_args.rosa_type == "4_before":
+        from src2_before.peft import PeftModel, get_peft_model, TaskType, LoraConfig
 
     # Sending telemetry. Tracking the example usage helps us better allocate resources to maintain them. The
     # information sent is the one passed as arguments along with your Python/PyTorch versions.
