@@ -268,6 +268,8 @@ def main():
         logger.info(f"Initialize LoRA in the default way")
         target_modules = model_args.target_modules.split(";")
         feedforward_modules = model_args.feedforward_modules.split(";")
+        logger.info(f"Add LoRA to {target_modules}")
+        logger.info(f"Place LoRA in front of {feedforward_modules}")
 
         lora_config = LoraConfig(
             task_type=TaskType.CAUSAL_LM,
