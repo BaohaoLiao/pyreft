@@ -280,6 +280,7 @@ def main():
             preds = p.predictions[0] if isinstance(p.predictions, tuple) else p.predictions
             preds = np.squeeze(preds) if is_regression else np.argmax(preds, axis=1)
             result = metric.compute(predictions=preds, references=p.label_ids)
+            print("!!!!!!!!!!!!!!!!!", result)
             if len(result) > 1:
                 result["combined_score"] = np.mean(list(result.values())).item()
             return result
