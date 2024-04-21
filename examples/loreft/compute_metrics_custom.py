@@ -2,8 +2,6 @@ import pyvene as pv
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from transformers import (
-    Trainer,
-    TrainingArguments,
     DataCollator,
     DataCollatorForSeq2Seq,
     AutoTokenizer
@@ -18,13 +16,7 @@ import torch
 import re
 import evaluate
 import numpy as np
-from torch.nn import BCEWithLogitsLoss, CrossEntropyLoss, MSELoss
 from transformers.utils import logging
-from transformers.trainer_utils import (
-    EvalPrediction,
-    has_length,
-    denumpify_detensorize
-)
 from pyreft import ReftDataCollator
 
 from dataclasses import dataclass
@@ -144,8 +136,7 @@ def compute_metrics(
         tokenizer.padding_side = "left" # switch padding side for collator
         num_beams = 4 if task in ["commonsense", "math"] and not greedy_decoding else 1
 
-    data_collator = data_collator if data_collator is not None else \
-        make_data_collator(tokenizer, intervenable.model)
+    data_collator = data_collator if data_collator is not None else make_data_collator(tokenizer, intervenable.model)
     eval_dataloader = make_dataloader(eval_dataset, batch_size, data_collator, shuffle=False)
     correct_count = 0
     total_count = 0
@@ -165,9 +156,7 @@ def compute_metrics(
     
             if task == "glue":
     
-                cf_outputs = intervenable(
-                    {"input_ids": inputs["input_ids"], "attention_mask": inputs["attention_mask"]},
-                    unit_locations={"sources->base": (None, intervention_locations.tolist())})
+                cf_outputs = intervenable({"input_ids": inputs["input_ids"], "attention_mask": inputs["attention_mask"]})
             
                 # lm loss on counterfactual labels
                 if dataset_name != "stsb":
