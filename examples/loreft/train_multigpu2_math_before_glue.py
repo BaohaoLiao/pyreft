@@ -221,7 +221,7 @@ def main():
     # Load dataset
     train_datasets = task_config[data_args.task]["train_datasets"] if data_args.train_dataset is None else [data_args.train_dataset]
     if data_args.task == "glue":
-        eval_datasets = [train_dataset]
+        eval_datasets = [data_args.train_dataset]
     else:
         eval_datasets = task_config[data_args.task]["eval_datasets"] if data_args.eval_dataset is None else [data_args.eval_dataset]
 
