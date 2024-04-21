@@ -156,7 +156,7 @@ def compute_metrics(
     
             if task == "glue":
     
-                cf_outputs = intervenable({"input_ids": inputs["input_ids"], "attention_mask": inputs["attention_mask"]})
+                cf_outputs = intervenable(input_ids=inputs["input_ids"], attention_mask=inputs["attention_mask"])
             
                 # lm loss on counterfactual labels
                 if dataset_name != "stsb":
