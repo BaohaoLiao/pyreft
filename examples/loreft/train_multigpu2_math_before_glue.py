@@ -333,16 +333,27 @@ def main():
         logger.info(f"Add LoRA to {target_modules}")
         logger.info(f"Place LoRA in front of {feedforward_modules}")
 
-        lora_config = LoraConfig(
-            task_type=TaskType.CAUSAL_LM,
-            inference_mode=False,
-            r=model_args.lora_rank,
-            #lora_alpha=16,
-            lora_dropout=0.,
-            target_modules=target_modules,
-            feedforward_modules=feedforward_modules,
-            init_lora_weights=True,
-        )
+        if data_args.rosa_type == "4_before":
+            lora_config = LoraConfig(
+                task_type=TaskType.CAUSAL_LM,
+                inference_mode=False,
+                r=model_args.lora_rank,
+                #lora_alpha=16,
+                lora_dropout=0.,
+                target_modules=target_modules,
+                feedforward_modules=feedforward_modules,
+                init_lora_weights=True,
+            )
+        else:
+            lora_config = LoraConfig(
+                task_type=TaskType.CAUSAL_LM,
+                inference_mode=False,
+                r=model_args.lora_rank,
+                #lora_alpha=16,
+                lora_dropout=0.,
+                target_modules=target_modules,
+                init_lora_weights=True,
+            )
         model = get_peft_model(model, lora_config)
 
     logger.info(model)
