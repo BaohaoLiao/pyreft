@@ -206,5 +206,5 @@ class GLUEDataset(Dataset):
             input_ids=self.input_ids[i],
             attention_mask=self.attention_mask[i],
             labels=self.labels[i],
-            id=self.id[i],
+            #id=self.id[i],
         )
