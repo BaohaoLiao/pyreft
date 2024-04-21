@@ -203,7 +203,7 @@ def main():
 
     # Set seed before initializing model.
     set_seed(training_args.seed)
-    train_dataset_str = train_dataset
+    train_dataset_str = data_args.train_dataset
 
     # Load tokenizer
     tokenizer = AutoTokenizer.from_pretrained(
