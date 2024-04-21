@@ -153,6 +153,8 @@ def main():
         from src1.peft import PeftModel, get_peft_model, TaskType, LoraConfig
     elif data_args.rosa_type == "4":
         from src2.peft import PeftModel, get_peft_model, TaskType, LoraConfig
+    elif data_args.rosa_type == "1_before":
+        from src_before.peft import PeftModel, get_peft_model, TaskType, LoraConfig
     elif data_args.rosa_type == "4_before":
         from src2_before.peft import PeftModel, get_peft_model, TaskType, LoraConfig
 
