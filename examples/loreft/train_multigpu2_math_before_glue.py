@@ -287,12 +287,12 @@ def main():
     # Load model
     if data_args.task in classification_tasks:
         config = AutoConfig.from_pretrained(
-            model, 
+            model_args.model_name_or_path, 
             num_labels=num_labels,
             finetuning_task=train_dataset_str,
         )
         model = AutoModelForSequenceClassification.from_pretrained(
-            model,
+            model_args.model_name_or_path,
             config=config, # just providing the label
         )
     else:
