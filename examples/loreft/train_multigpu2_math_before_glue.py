@@ -360,10 +360,13 @@ def main():
     model.print_trainable_parameters()
 
     if data_args.task == "glue":
-        for param in model.model.classifier.parameters():
-            param.requires_grad = True
-        logger.info("Make the classifier head trainable.")
-        model.print_trainable_parameters()
+        #for param in model.model.classifier.parameters():
+        #    param.requires_grad = True
+        #logger.info("Make the classifier head trainable.")
+        #model.print_trainable_parameters()
+        for name, param in model.named_parameters():
+            if param.requires_grad:
+                print(name)
 
     # We resize the embeddings only when necessary to avoid index errors. If you are creating a model from scratch
     # on a small vocab and want a smaller embedding size, remove this test.
