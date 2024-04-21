@@ -363,7 +363,7 @@ def main():
         for param in model.model.classifier.parameters():
             param.requires_grad = True
         #logger.info("Make the classifier head trainable.")
-        #model.print_trainable_parameters()
+        model.print_trainable_parameters()
         for name, param in model.named_parameters():
             if param.requires_grad:
                 print(name)
