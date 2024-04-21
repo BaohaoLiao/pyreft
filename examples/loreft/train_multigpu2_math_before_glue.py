@@ -360,8 +360,8 @@ def main():
     model.print_trainable_parameters()
 
     if data_args.task == "glue":
-        #for param in model.model.classifier.parameters():
-        #    param.requires_grad = True
+        for param in model.model.classifier.parameters():
+            param.requires_grad = True
         #logger.info("Make the classifier head trainable.")
         #model.print_trainable_parameters()
         for name, param in model.named_parameters():
