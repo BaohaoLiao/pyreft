@@ -89,7 +89,8 @@ class ModelArguments:
     ckpt_path_for_eval: str = field(default=None)
     target_modules: str = field(default="q_proj;k_proj;v_proj;o_proj;up_proj;down_proj;gate_proj")
     feedforward_modules: str = field(default="")
-
+    boft_factor: int = field(default=1)
+    oft_share: bool = field(default=False)
 
 @dataclass
 class DataTrainingArguments:
@@ -123,8 +124,7 @@ class DataTrainingArguments:
     top_p: Optional[float] = field(default=None)
     top_k: Optional[float] = field(default=None)
     greedy_decoding: bool = field(default=False)
-    rosa_type: str = field(default="1")
-
+    adatper_type: str = field(default="oft")
 
 def main():
     parser = HfArgumentParser((ModelArguments, DataTrainingArguments, TrainingArguments))
@@ -146,23 +146,6 @@ def main():
 
     assert data_args.task in {"commonsense", "math", "alpaca", "instruct", "ultrafeedback", "glue", "gsm8k"}
     assert data_args.task in task_config, f"Unrecognized task: {data_args.task}"
-
-    if data_args.rosa_type == "1":
-        from src.peft import PeftModel, get_peft_model, TaskType, LoraConfig
-    elif data_args.rosa_type == "2":
-        from src1.peft import PeftModel, get_peft_model, TaskType, LoraConfig
-    elif data_args.rosa_type == "4":
-        from src2.peft import PeftModel, get_peft_model, TaskType, LoraConfig
-    elif data_args.rosa_type == "1_before":
-        from src_before.peft import PeftModel, get_peft_model, TaskType, LoraConfig
-    elif data_args.rosa_type == "4_before":
-        from src2_before.peft import PeftModel, get_peft_model, TaskType, LoraConfig
-    elif data_args.rosa_type == "1_staticposition":
-        from src_staticposition.peft import PeftModel, get_peft_model, TaskType, LoraConfig
-    elif data_args.rosa_type == "1_dynamicposition":
-        from src_dynamicposition.peft import PeftModel, get_peft_model, TaskType, LoraConfig
-    elif data_args.rosa_type == "4_dynamicposition":
-        from src2_dynamicposition.peft import PeftModel, get_peft_model, TaskType, LoraConfig
 
     # Sending telemetry. Tracking the example usage helps us better allocate resources to maintain them. The
     # information sent is the one passed as arguments along with your Python/PyTorch versions.
@@ -327,7 +310,7 @@ def main():
 
     # PEFT
     if model_args.adapter_name_or_path is not None:
-        logger.info(f"Initialize LoRA from {model_args.adapter_name_or_path}")
+        logger.info(f"Initialize OFT from {model_args.adapter_name_or_path}")
         model = PeftModel.from_pretrained(
             model,
             model_args.adapter_name_or_path,
@@ -335,39 +318,39 @@ def main():
             token=model_args.token,
         )
     else:
-        logger.info(f"Initialize LoRA in the default way")
+        logger.info(f"Initialize OFT in the default way")
         target_modules = model_args.target_modules.split(";")
-        feedforward_modules = model_args.feedforward_modules.split(";")
-        logger.info(f"Add LoRA to {target_modules}")
-        logger.info(f"Place LoRA in front of {feedforward_modules}")
+        logger.info(f"Add adapter to {target_modules}")
+
+        from peft import PeftModel, get_peft_model, TaskType, OFTConfig, BOFTConfig
 
         if data_args.task =="glue":
             task_type = TaskType.SEQ_CLS
         else:
             task_type = TaskType.CAUSAL_LM
 
-        if "before" in data_args.rosa_type:
-            lora_config = LoraConfig(
+        if data_args.adapter_type == "boft":
+            peft_config = BOFTConfig(
                 task_type=task_type,
                 inference_mode=False,
-                r=model_args.lora_rank,
-                #lora_alpha=16,
-                lora_dropout=0.,
+                boft_block_size=model_args.lora_rank,
+                boft_n_butterfly_factor=model_args.boft_factor,
                 target_modules=target_modules,
-                feedforward_modules=feedforward_modules,
-                init_lora_weights=True,
+                init_weights=True,
             )
+
         else:
-            lora_config = LoraConfig(
+            peft_config = OFTConfig(
                 task_type=task_type,
                 inference_mode=False,
                 r=model_args.lora_rank,
-                #lora_alpha=16,
-                lora_dropout=0.,
                 target_modules=target_modules,
-                init_lora_weights=True,
+                init_weights=True,
+                block_share=model_args.oft_share
             )
-        model = get_peft_model(model, lora_config)
+
+
+        model = get_peft_model(model, peft_config)
 
     #for name, p in model.named_parameters():
     #    if  p.requires_grad:
