@@ -251,12 +251,6 @@ class LoraModel(BaseTuner):
                 module.to(weight.device)
 
     def _mark_only_adapters_as_trainable(self, model: nn.Module) -> None:
-        print("Before ---------------------------")
-        for n, p in model.named_parameters():
-            if p.requires_grad:
-                print(n)
-
-
         for n, p in model.named_parameters():
             if self.prefix not in n:
                 p.requires_grad = False
@@ -276,11 +270,6 @@ class LoraModel(BaseTuner):
                         m.bias.requires_grad = True
             else:
                 raise NotImplementedError(f"Requested bias: {bias}, is not implemented.")
-            
-        print("After ---------------------------")
-        for n, p in model.named_parameters():
-            if p.requires_grad:
-                print(n)
 
     @staticmethod
     def _create_new_module(lora_config, adapter_name, target, **kwargs):
