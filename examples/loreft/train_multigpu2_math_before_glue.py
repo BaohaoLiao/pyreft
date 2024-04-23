@@ -157,8 +157,8 @@ def main():
         from src_before.peft import PeftModel, get_peft_model, TaskType, LoraConfig
     elif data_args.rosa_type == "4_before":
         from src2_before.peft import PeftModel, get_peft_model, TaskType, LoraConfig
-    elif data_args.rosa_type == "1_before_staticposition":
-        from src_before_staticposition.peft import PeftModel, get_peft_model, TaskType, LoraConfig
+    elif data_args.rosa_type == "1_staticposition":
+        from src_staticposition.peft import PeftModel, get_peft_model, TaskType, LoraConfig
 
     # Sending telemetry. Tracking the example usage helps us better allocate resources to maintain them. The
     # information sent is the one passed as arguments along with your Python/PyTorch versions.
