@@ -322,7 +322,7 @@ def main():
         target_modules = model_args.target_modules.split(";")
         logger.info(f"Add adapter to {target_modules}")
 
-        from peft import PeftModel, get_peft_model, TaskType, OFTConfig, BOFTConfig
+        from peft import PeftModel, get_peft_model, TaskType, OFTConfig
 
         if data_args.task =="glue":
             task_type = TaskType.SEQ_CLS
@@ -330,6 +330,7 @@ def main():
             task_type = TaskType.CAUSAL_LM
 
         if data_args.adapter_type == "boft":
+            from peft import BOFTConfig
             peft_config = BOFTConfig(
                 task_type=task_type,
                 inference_mode=False,
