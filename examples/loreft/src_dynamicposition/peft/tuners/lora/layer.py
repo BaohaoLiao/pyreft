@@ -31,7 +31,7 @@ from .config import LoraConfig
 
 class LoraLayer(BaseTunerLayer):
     # All names of layers that may contain (trainable) adapter weights
-    adapter_layer_names = ("lora_A", "lora_B", "lora_embedding_A", "lora_embedding_B", "positions")
+    adapter_layer_names = ("lora_A", "lora_B", "lora_embedding_A", "lora_embedding_B", "lora_positions")
     # All names of other parameters that may contain adapter-related parameters
     other_param_names = ("r", "lora_alpha", "scaling", "lora_dropout")
 
@@ -43,7 +43,7 @@ class LoraLayer(BaseTunerLayer):
         self.lora_dropout = nn.ModuleDict({})
         self.lora_A = nn.ModuleDict({})
         self.lora_B = nn.ModuleDict({})
-        self.positions = nn.ModuleDict({})
+        self.lora_positions = nn.ModuleDict({})
         # For Embedding layer
         self.lora_embedding_A = nn.ParameterDict({})
         self.lora_embedding_B = nn.ParameterDict({})
@@ -107,7 +107,7 @@ class LoraLayer(BaseTunerLayer):
         #self.lora_B[adapter_name] = nn.Linear(r, self.out_features, bias=False)
         self.lora_A[adapter_name] = nn.Linear(self.out_features//2, 1, bias=False)
         self.lora_B[adapter_name] = nn.Linear(self.out_features//2, 1, bias=False)
-        self.positions[adapter_name] = nn.Linear(1024, 1, bias=False)
+        self.lora_positions[adapter_name] = nn.Linear(1024, 1, bias=False)
 
         if use_rslora:
             self.scaling[adapter_name] = lora_alpha / math.sqrt(r)
@@ -149,7 +149,7 @@ class LoraLayer(BaseTunerLayer):
                 # nn.init.kaiming_uniform_(self.lora_A[adapter_name].weight, a=math.sqrt(5))
                 nn.init.zeros_(self.lora_A[adapter_name].weight)
                 nn.init.ones_(self.lora_B[adapter_name].weight)
-                nn.init.ones_(self.positions[adapter_name].weight)
+                nn.init.ones_(self.lora_positions[adapter_name].weight)
             elif init_lora_weights.lower() == "gaussian":
                 #nn.init.normal_(self.lora_A[adapter_name].weight, std=1 / self.r[adapter_name])
                 nn.init.normal_(self.lora_A[adapter_name].weight, std=0.02)
@@ -537,7 +537,7 @@ class Linear(nn.Module, LoraLayer):
                     continue
                 lora_A = self.lora_A[active_adapter]
                 lora_B = self.lora_B[active_adapter]
-                positions = self.positions[active_adapter]
+                positions = self.lora_positions[active_adapter]
 
                 dropout = self.lora_dropout[active_adapter]
                 scaling = self.scaling[active_adapter]
