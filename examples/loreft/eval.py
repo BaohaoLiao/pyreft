@@ -145,8 +145,16 @@ def main():
         from src1.peft import PeftModel, get_peft_model, TaskType, LoraConfig
     elif data_args.rosa_type == "4":
         from src2.peft import PeftModel, get_peft_model, TaskType, LoraConfig
+    elif data_args.rosa_type == "1_before":
+        from src_before.peft import PeftModel, get_peft_model, TaskType, LoraConfig
     elif data_args.rosa_type == "4_before":
         from src2_before.peft import PeftModel, get_peft_model, TaskType, LoraConfig
+    elif data_args.rosa_type == "1_staticposition":
+        from src_staticposition.peft import PeftModel, get_peft_model, TaskType, LoraConfig
+    elif data_args.rosa_type == "1_dynamicposition":
+        from src_dynamicposition.peft import PeftModel, get_peft_model, TaskType, LoraConfig
+    elif data_args.rosa_type == "4_dynamicposition":
+        from src2_dynamicposition.peft import PeftModel, get_peft_model, TaskType, LoraConfig
 
     # Sending telemetry. Tracking the example usage helps us better allocate resources to maintain them. The
     # information sent is the one passed as arguments along with your Python/PyTorch versions.
@@ -280,16 +288,27 @@ def main():
         logger.info(f"Add LoRA to {target_modules}")
         logger.info(f"Place LoRA in front of {feedforward_modules}")
 
-        lora_config = LoraConfig(
-            task_type=TaskType.CAUSAL_LM,
-            inference_mode=False,
-            r=model_args.lora_rank,
-            #lora_alpha=16,
-            lora_dropout=0.,
-            target_modules=target_modules,
-            feedforward_modules=feedforward_modules,
-            init_lora_weights=True,
-        )
+        if "before" in data_args.rosa_type:
+            lora_config = LoraConfig(
+                task_type=task_type,
+                inference_mode=False,
+                r=model_args.lora_rank,
+                #lora_alpha=16,
+                lora_dropout=0.,
+                target_modules=target_modules,
+                feedforward_modules=feedforward_modules,
+                init_lora_weights=True,
+            )
+        else:
+            lora_config = LoraConfig(
+                task_type=task_type,
+                inference_mode=False,
+                r=model_args.lora_rank,
+                #lora_alpha=16,
+                lora_dropout=0.,
+                target_modules=target_modules,
+                init_lora_weights=True,
+            )
         model = get_peft_model(model, lora_config)
     logger.info(model)
     model.print_trainable_parameters()
