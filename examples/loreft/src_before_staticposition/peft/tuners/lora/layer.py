@@ -250,15 +250,18 @@ class LoraLayer(BaseTunerLayer):
         return result_dora
     
     def _apply_rosa(self, x, lora_A, lora_B):
-        lora_A_cos = lora_A.weight.squeeze().repeat_interleave(2).cos()
-        lora_A_sin = lora_A.weight.squeeze().repeat_interleave(2).sin()
-        lora_B_repeat = lora_B.weight.squeeze().repeat_interleave(2)
+        assert len(x.size()) == 3
+        lora_A_w = lora_A.weight.squeeze() # d // 2
+        lora_B_repeat = lora_B.weight.squeeze().repeat_interleave(2) # d
+        
+        position_ids = torch.arange(x.size(1), device=x.device, dtype=torch.int64).type_as(x) # l
+        lora_A_w = torch.outer(position_ids, lora_A_w) # l x d//2
+        lora_A_w = lora_A_w.repeat_interleave(2, 1) # l x d
+        lora_A_w_sin = lora_A_w.sin() * lora_B_repeat.unsqueeze(0)
+        lora_A_w_cos = lora_A_w.cos() * lora_B_repeat.unsqueeze(0)
 
-        lora_A_cos = lora_B_repeat * lora_A_cos
-        lora_A_sin = lora_B_repeat * lora_A_sin
-    
         rotate_half_x = torch.stack([-x[..., 1::2], x[..., ::2]], dim=-1).reshape_as(x)
-        x = x * lora_A_cos + rotate_half_x * lora_A_sin
+        x = x * lora_A_w_cos.unsqueeze(0) + rotate_half_x * lora_A_w_sin.unsqueeze(0)
         return x
 
     def set_scale(self, adapter, scale):
