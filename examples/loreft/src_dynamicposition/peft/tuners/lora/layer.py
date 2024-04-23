@@ -109,7 +109,7 @@ class LoraLayer(BaseTunerLayer):
 
         weight = torch.arange(1024).float()
         self.positions[adapter_name] = nn.Parameter(weight)
-        print(self.positions.requires_grad)
+        print(self.positions[adapter_name].requires_grad)
 
         if use_rslora:
             self.scaling[adapter_name] = lora_alpha / math.sqrt(r)
