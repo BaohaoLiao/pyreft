@@ -256,6 +256,7 @@ class LoraLayer(BaseTunerLayer):
         lora_A_w = lora_A_w.repeat_interleave(2, 1) # l x d
         lora_A_w_sin = lora_A_w.sin() * lora_B_repeat.unsqueeze(0)
         lora_A_w_cos = lora_A_w.cos() * lora_B_repeat.unsqueeze(0)
+        print(x.size(), lora_A_w_sin.size())
 
         rotate_half_x = torch.stack([-x[..., 1::2], x[..., ::2]], dim=-1).reshape_as(x)
         x = x * lora_A_w_cos.unsqueeze(0) + rotate_half_x * lora_A_w_sin.unsqueeze(0)
@@ -355,7 +356,7 @@ class LoraLayer(BaseTunerLayer):
 #  ------------------------------------------------------------------------------------------
 
 
-class Linear(nn.Module, LoraLayer):
+class Linear(nn.Module, LoraLayer):)
     # Lora implemented in a dense layer
     def __init__(
         self,
