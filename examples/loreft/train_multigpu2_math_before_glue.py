@@ -362,9 +362,9 @@ def main():
             )
         model = get_peft_model(model, lora_config)
 
-    for name, p in model.named_parameters():
-        if  p.requires_grad:
-            print(name)
+    #for name, p in model.named_parameters():
+    #    if  p.requires_grad:
+    #        print(name)
 
     logger.info(model)
     model.print_trainable_parameters()
