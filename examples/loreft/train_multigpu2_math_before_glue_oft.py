@@ -328,6 +328,7 @@ def main():
             task_type = TaskType.SEQ_CLS
         else:
             task_type = TaskType.CAUSAL_LM
+        task_type = TaskType.CAUSAL_LM
 
         if data_args.adapter_type == "boft":
             from peft import BOFTConfig
