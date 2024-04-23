@@ -159,6 +159,8 @@ def main():
         from src2_before.peft import PeftModel, get_peft_model, TaskType, LoraConfig
     elif data_args.rosa_type == "1_staticposition":
         from src_staticposition.peft import PeftModel, get_peft_model, TaskType, LoraConfig
+    elif data_args.rosa_type == "1_dynamicposition":
+        from src_dynamicposition.peft import PeftModel, get_peft_model, TaskType, LoraConfig
 
     # Sending telemetry. Tracking the example usage helps us better allocate resources to maintain them. The
     # information sent is the one passed as arguments along with your Python/PyTorch versions.
