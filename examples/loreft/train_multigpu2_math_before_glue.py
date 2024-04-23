@@ -337,7 +337,7 @@ def main():
         logger.info(f"Add LoRA to {target_modules}")
         logger.info(f"Place LoRA in front of {feedforward_modules}")
 
-        if data_args.rosa_type == "4_before":
+        if "before" in data_args.rosa_type:
             lora_config = LoraConfig(
                 task_type=TaskType.CAUSAL_LM,
                 inference_mode=False,
