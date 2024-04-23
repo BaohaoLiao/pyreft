@@ -124,7 +124,7 @@ class DataTrainingArguments:
     top_p: Optional[float] = field(default=None)
     top_k: Optional[float] = field(default=None)
     greedy_decoding: bool = field(default=False)
-    adatper_type: str = field(default="oft")
+    adapter_type: str = field(default="oft")
 
 def main():
     parser = HfArgumentParser((ModelArguments, DataTrainingArguments, TrainingArguments))
