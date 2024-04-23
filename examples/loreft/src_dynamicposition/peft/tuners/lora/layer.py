@@ -84,7 +84,7 @@ class LoraLayer(BaseTunerLayer):
         self.in_features = in_features
         self.out_features = out_features
 
-        self.positions = nn.ParameterDict({})
+        #self.positions = nn.ParameterDict({})
 
     def update_layer(
         self, adapter_name, r, lora_alpha, lora_dropout, init_lora_weights, use_rslora, use_dora: bool = False
@@ -107,8 +107,9 @@ class LoraLayer(BaseTunerLayer):
         self.lora_A[adapter_name] = nn.Linear(self.out_features//2, 1, bias=False)
         self.lora_B[adapter_name] = nn.Linear(self.out_features//2, 1, bias=False)
 
+        self.positions = nn.ParameterDict()
         weight = torch.arange(1024).float()
-        self.positions[adapter_name] = nn.Parameter(weight)
+        self.positions[adapter_name] = nn.Parameter(weight, requires_grad=True)
         self.adapter_layer_names = self.adapter_layer_names[:] + ("positions",)
 
         if use_rslora:
