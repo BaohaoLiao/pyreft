@@ -356,7 +356,7 @@ class LoraLayer(BaseTunerLayer):
 #  ------------------------------------------------------------------------------------------
 
 
-class Linear(nn.Module, LoraLayer):)
+class Linear(nn.Module, LoraLayer):
     # Lora implemented in a dense layer
     def __init__(
         self,
