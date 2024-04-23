@@ -31,7 +31,7 @@ from .config import LoraConfig
 
 class LoraLayer(BaseTunerLayer):
     # All names of layers that may contain (trainable) adapter weights
-    adapter_layer_names = ("lora_A", "lora_B", "lora_embedding_A", "lora_embedding_B")
+    adapter_layer_names = ("lora_A", "lora_B", "lora_embedding_A", "lora_embedding_B", "positions")
     # All names of other parameters that may contain adapter-related parameters
     other_param_names = ("r", "lora_alpha", "scaling", "lora_dropout")
 
@@ -43,6 +43,7 @@ class LoraLayer(BaseTunerLayer):
         self.lora_dropout = nn.ModuleDict({})
         self.lora_A = nn.ModuleDict({})
         self.lora_B = nn.ModuleDict({})
+        self.positions = nn.ModuleDict({})
         # For Embedding layer
         self.lora_embedding_A = nn.ParameterDict({})
         self.lora_embedding_B = nn.ParameterDict({})
@@ -106,11 +107,7 @@ class LoraLayer(BaseTunerLayer):
         #self.lora_B[adapter_name] = nn.Linear(r, self.out_features, bias=False)
         self.lora_A[adapter_name] = nn.Linear(self.out_features//2, 1, bias=False)
         self.lora_B[adapter_name] = nn.Linear(self.out_features//2, 1, bias=False)
-
-        self.positions = nn.ParameterDict()
-        weight = torch.arange(1024).float()
-        self.positions[adapter_name] = nn.Parameter(weight, requires_grad=True)
-        self.adapter_layer_names = self.adapter_layer_names[:] + ("positions",)
+        self.positions[adapter_name] = nn.Linear(1024, 1, bias=False)
 
         if use_rslora:
             self.scaling[adapter_name] = lora_alpha / math.sqrt(r)
@@ -139,7 +136,6 @@ class LoraLayer(BaseTunerLayer):
         else:
             self.use_dora[adapter_name] = False
 
-        self.to(self.get_base_layer().weight.device)
         self.set_adapter(self.active_adapters)
 
     def reset_lora_parameters(self, adapter_name, init_lora_weights):
@@ -153,6 +149,7 @@ class LoraLayer(BaseTunerLayer):
                 # nn.init.kaiming_uniform_(self.lora_A[adapter_name].weight, a=math.sqrt(5))
                 nn.init.zeros_(self.lora_A[adapter_name].weight)
                 nn.init.ones_(self.lora_B[adapter_name].weight)
+                nn.init.ones_(self.positions[adapter_name].weight)
             elif init_lora_weights.lower() == "gaussian":
                 #nn.init.normal_(self.lora_A[adapter_name].weight, std=1 / self.r[adapter_name])
                 nn.init.normal_(self.lora_A[adapter_name].weight, std=0.02)
@@ -259,8 +256,9 @@ class LoraLayer(BaseTunerLayer):
         assert len(x.size()) == 3
         lora_A_w = lora_A.weight.squeeze() # d // 2
         lora_B_repeat = lora_B.weight.squeeze().repeat_interleave(2) # d
+        position_ids = positions.weight.squeeze()[:x.size(1)]
         
-        position_ids = positions[:x.size(1)] # l
+        #position_ids = positions[:x.size(1)] # l
         lora_A_w = torch.outer(position_ids, lora_A_w) # l x d//2
         lora_A_w = lora_A_w.repeat_interleave(2, 1) # l x d
         lora_A_w_sin = lora_A_w.sin() * lora_B_repeat.unsqueeze(0)
