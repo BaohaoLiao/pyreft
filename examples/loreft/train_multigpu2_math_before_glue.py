@@ -89,6 +89,7 @@ class ModelArguments:
     ckpt_path_for_eval: str = field(default=None)
     target_modules: str = field(default="q_proj;k_proj;v_proj;o_proj;up_proj;down_proj;gate_proj")
     feedforward_modules: str = field(default="")
+    freeze_lora_B: bool = field(default=False)
 
 
 @dataclass
@@ -376,6 +377,12 @@ def main():
     #for name, p in model.named_parameters():
     #    if  p.requires_grad:
     #        print(name)
+
+    if model_args.freeze_lora_B:
+        for name, param in model.named_parameters():
+            if "lora_B" in name:
+                logger.info(f"Freeze {name}")
+                param.requires_grad = False
 
     logger.info(model)
     model.print_trainable_parameters()
