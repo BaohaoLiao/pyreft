@@ -350,7 +350,7 @@ def main():
             task_type = TaskType.SEQ_CLS
         else:
             task_type = TaskType.CAUSAL_LM
-        task_type = TaskType.CAUSAL_LM
+        #task_type = TaskType.CAUSAL_LM
 
         if "before" in data_args.rosa_type:
             lora_config = LoraConfig(
