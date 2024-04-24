@@ -350,7 +350,7 @@ def main():
             task_type = TaskType.SEQ_CLS
         else:
             task_type = TaskType.CAUSAL_LM
-        #task_type = TaskType.CAUSAL_LM
+        task_type = TaskType.CAUSAL_LM
 
         if "before" in data_args.rosa_type:
             lora_config = LoraConfig(
@@ -384,6 +384,8 @@ def main():
 
     if data_args.task == "glue":
         for param in model.model.classifier.parameters():
+            param.requires_grad = True
+        for param in model.model.pooler.parameters():
             param.requires_grad = True
         logger.info("Make the classifier head trainable.")
         model.print_trainable_parameters()
