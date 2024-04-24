@@ -224,7 +224,10 @@ def main():
         padding_side="right",
         use_fast=False,
     )
-    tokenizer.pad_token = tokenizer.unk_token
+    if tokenizer.unk_token is None:
+        tokenizer.add_special_tokens({"pad_token":"<pad>"})
+    else:
+        tokenizer.pad_token = tokenizer.unk_token
 
     # Load dataset
     train_datasets = task_config[data_args.task]["train_datasets"] if data_args.train_dataset is None else [data_args.train_dataset]
