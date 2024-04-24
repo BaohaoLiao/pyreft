@@ -27,7 +27,7 @@ from transformers.utils import send_example_telemetry
 from transformers.trainer_utils import get_last_checkpoint, EvalPrediction
 from safetensors import safe_open
 
-from peft import PeftModel, get_peft_model, TaskType, LoraConfig
+from peft import PeftModel, get_peft_model, TaskType, LoraConfig, BottleneckConfig
 from task_config import task_config
 from dataset_multigpu import SupervisedDataset, GLUEDataset
 from compute_metrics_custom import compute_metrics
@@ -91,6 +91,9 @@ class ModelArguments:
     feedforward_modules: str = field(default="")
     freeze_lora_B: bool = field(default=False)
     adapter_name: str = field(default="lora")
+    use_parallel_adapter: bool = field(default=False)
+    use_adapterp: bool = field(default=False)
+
 
 
 @dataclass
@@ -389,6 +392,20 @@ def main():
                 target_modules=["q_proj", "k_proj", "v_proj", "up_proj", "down_proj"],
                 init_lora_weights=True,
             )
+    elif model_args.adapter_name == "bottleneck":
+        target_modules = model_args.target_modules.split(";")
+        BottleneckConfig(
+            bottleneck_size=256,
+            non_linearity="tanh",
+            adapter_dropout=0.,
+            use_parallel_adapter=model_args.use_parallel_adapter,
+            use_adapterp=model_args.use_adapterp,
+            target_modules=target_modules,
+            scaling=1,
+            bias="none",
+            task_type=task_type,
+        )
+
     model = get_peft_model(model, peft_config)
 
     if model_args.freeze_lora_B:
