@@ -27,7 +27,7 @@ from transformers.utils import send_example_telemetry
 from transformers.trainer_utils import get_last_checkpoint, EvalPrediction
 from safetensors import safe_open
 
-from peft import PeftModel, get_peft_model, TaskType, LoraConfig
+from peft import PeftModel, get_peft_model, TaskType, LoraConfig, PrefixTuningConfig
 from task_config import task_config
 from dataset_multigpu import SupervisedDataset, GLUEDataset
 from compute_metrics_custom import compute_metrics
@@ -385,15 +385,20 @@ def main():
     task_type = TaskType.CAUSAL_LM
     if model_args.adapter_name == "lora":
         peft_config = LoraConfig(
-                task_type=task_type,
-                inference_mode=False,
-                r=model_args.lora_rank,
-                lora_alpha=64,
-                lora_dropout=0.05,
-                use_dora=model_args.use_dora,
-                target_modules=["q_proj", "k_proj", "v_proj", "up_proj", "down_proj"],
-                init_lora_weights=True,
-            )
+            task_type=task_type,
+            inference_mode=False,
+            r=model_args.lora_rank,
+            lora_alpha=64,
+            lora_dropout=0.05,
+            use_dora=model_args.use_dora,
+            target_modules=["q_proj", "k_proj", "v_proj", "up_proj", "down_proj"],
+            init_lora_weights=True,
+        )
+    elif model_args.adapter_name == "prefix-tuning":
+        peft_config = PrefixTuningConfig(
+            num_virtual_tokens=10,
+            task_type=task_type,
+        )
     """
     elif model_args.adapter_name == "bottleneck":
         target_modules = model_args.target_modules.split(";")
