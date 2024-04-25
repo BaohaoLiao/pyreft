@@ -85,7 +85,7 @@ class ModelArguments:
         },
     )
     adapter_name_or_path: str = field(default=None)
-    lora_rank: int = field(default=8)
+    lora_rank: int = field(default=32)
     ckpt_path_for_eval: str = field(default=None)
     target_modules: str = field(default="q_proj;k_proj;v_proj;o_proj;up_proj;down_proj;gate_proj")
     feedforward_modules: str = field(default="")
@@ -93,6 +93,7 @@ class ModelArguments:
     adapter_name: str = field(default="lora")
     use_parallel_adapter: bool = field(default=False)
     use_adapterp: bool = field(default=False)
+    use_dora: bool = field(default=False)
 
 
 
@@ -386,12 +387,14 @@ def main():
         peft_config = LoraConfig(
                 task_type=task_type,
                 inference_mode=False,
-                r=32,
+                r=model_args.lora_rank,
                 lora_alpha=64,
-                lora_dropout=0.,
+                lora_dropout=0.05,
+                use_dora=model_args.use_dora,
                 target_modules=["q_proj", "k_proj", "v_proj", "up_proj", "down_proj"],
                 init_lora_weights=True,
             )
+    """
     elif model_args.adapter_name == "bottleneck":
         target_modules = model_args.target_modules.split(";")
         BottleneckConfig(
@@ -405,6 +408,7 @@ def main():
             bias="none",
             task_type=task_type,
         )
+    """
 
     model = get_peft_model(model, peft_config)
 
