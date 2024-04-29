@@ -27,7 +27,7 @@ from transformers.utils import send_example_telemetry
 from transformers.trainer_utils import get_last_checkpoint, EvalPrediction
 from safetensors import safe_open
 
-from src2_before.peft import PeftModel, get_peft_model, TaskType, LoraConfig
+from src_boft.peft import PeftModel, get_peft_model, TaskType, LoraConfig, OFTConfig, BOFTConfig
 from task_config import task_config
 from dataset_multigpu import SupervisedDataset, GLUEDataset
 from compute_metrics_custom import compute_metrics
@@ -91,7 +91,7 @@ class ModelArguments:
     feedforward_modules: str = field(default="")
     boft_factor: int = field(default=1)
     oft_share: bool = field(default=False)
-    oft_dropout: float = field(default=0.)
+    boft_dropout: float = field(default=0.)
 
 @dataclass
 class DataTrainingArguments:
@@ -323,8 +323,6 @@ def main():
         target_modules = model_args.target_modules.split(";")
         logger.info(f"Add adapter to {target_modules}")
 
-        from peft import PeftModel, get_peft_model, TaskType, OFTConfig
-
         if data_args.task =="glue":
             task_type = TaskType.SEQ_CLS
         else:
@@ -332,16 +330,15 @@ def main():
         task_type = TaskType.CAUSAL_LM
 
         if data_args.adapter_type == "boft":
-            from peft import BOFTConfig
             peft_config = BOFTConfig(
                 task_type=task_type,
                 inference_mode=False,
                 boft_block_size=model_args.lora_rank,
                 boft_n_butterfly_factor=model_args.boft_factor,
                 target_modules=target_modules,
+                boft_dropout=model_args.boft_dropout
                 init_weights=True,
             )
-
         else:
             peft_config = OFTConfig(
                 task_type=task_type,
@@ -350,7 +347,7 @@ def main():
                 target_modules=target_modules,
                 init_weights=True,
                 block_share=model_args.oft_share,
-                module_dropout=model_args.oft_dropout,
+                module_dropout=model_args.boft_dropout,
             )
 
 
