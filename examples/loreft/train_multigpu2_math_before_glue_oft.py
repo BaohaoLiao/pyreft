@@ -27,7 +27,7 @@ from transformers.utils import send_example_telemetry
 from transformers.trainer_utils import get_last_checkpoint, EvalPrediction
 from safetensors import safe_open
 
-from src_boft.peft import PeftModel, get_peft_model, TaskType, LoraConfig, OFTConfig, BOFTConfig
+from peft import PeftModel, get_peft_model, TaskType, LoraConfig, OFTConfig, BOFTConfig
 from task_config import task_config
 from dataset_multigpu import SupervisedDataset, GLUEDataset
 from compute_metrics_custom import compute_metrics
