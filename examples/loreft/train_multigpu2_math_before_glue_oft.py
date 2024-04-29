@@ -336,7 +336,7 @@ def main():
                 boft_block_size=model_args.lora_rank,
                 boft_n_butterfly_factor=model_args.boft_factor,
                 target_modules=target_modules,
-                boft_dropout=model_args.boft_dropout
+                boft_dropout=model_args.boft_dropout,
                 init_weights=True,
             )
         else:
