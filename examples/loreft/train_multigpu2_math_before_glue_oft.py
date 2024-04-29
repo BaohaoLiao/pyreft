@@ -91,6 +91,7 @@ class ModelArguments:
     feedforward_modules: str = field(default="")
     boft_factor: int = field(default=1)
     oft_share: bool = field(default=False)
+    oft_dropout: float = field(default=0.)
 
 @dataclass
 class DataTrainingArguments:
@@ -348,7 +349,8 @@ def main():
                 r=model_args.lora_rank,
                 target_modules=target_modules,
                 init_weights=True,
-                block_share=model_args.oft_share
+                block_share=model_args.oft_share,
+                module_dropout=model_args.oft_dropout,
             )
 
 
