@@ -51,7 +51,11 @@ class SupervisedDataset(Dataset):
         if dataset is None:
             print("loading data for dataset: ", data_path)
             if task in ["alpaca", "instruct", "ultrafeedback"] and data_split != "train":
-                task_dataset = load_dataset("tatsu-lab/alpaca_eval", "alpaca_eval")["eval"]
+                #task_dataset = load_dataset("tatsu-lab/alpaca_eval", "alpaca_eval")["eval"]
+                task_dataset = load_dataset(
+                    "json", 
+                    data_files="/data/chatgpt/data/baliao/rosa/04_pyreft_peft/pyreft/examples/loreft/dataset/alpaca_eval.json"
+                )["train"]
             #elif data_path.endswith(".json"):
             #    task_dataset = load_dataset("json", data_files=data_path)[data_split]
             #else:
