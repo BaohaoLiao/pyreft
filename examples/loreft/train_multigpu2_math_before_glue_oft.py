@@ -27,7 +27,7 @@ from transformers.utils import send_example_telemetry
 from transformers.trainer_utils import get_last_checkpoint, EvalPrediction
 from safetensors import safe_open
 
-from peft import PeftModel, get_peft_model, TaskType, LoraConfig, OFTConfig, BOFTConfig
+from peft import PeftModel, get_peft_model, TaskType, OFTConfig, BOFTConfig, IA3Config
 from task_config import task_config
 from dataset_multigpu import SupervisedDataset, GLUEDataset
 from compute_metrics_custom import compute_metrics
@@ -321,7 +321,8 @@ def main():
     else:
         logger.info(f"Initialize OFT in the default way")
         target_modules = model_args.target_modules.split(";")
-        logger.info(f"Add adapter to {target_modules}")
+        feedforward_modules = model_args.feedforward_modules.split(";")
+        logger.info(f"Add adapter to {target_modules} with {feedforward_modules} before")
 
         if data_args.task =="glue":
             task_type = TaskType.SEQ_CLS
@@ -338,6 +339,14 @@ def main():
                 target_modules=target_modules,
                 boft_dropout=model_args.boft_dropout,
                 init_weights=True,
+            )
+        elif data_args.adapter_type == "ia3":
+            peft_config = BOFTConfig(
+                task_type=task_type,
+                inference_mode=False,
+                target_modules=target_modules,
+                feedforward_modules=feedforward_modules,
+                init_ia3_weights=True,
             )
         else:
             peft_config = OFTConfig(
