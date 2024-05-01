@@ -341,7 +341,7 @@ def main():
                 init_weights=True,
             )
         elif data_args.adapter_type == "ia3":
-            peft_config = BOFTConfig(
+            peft_config = IA3Config(
                 task_type=task_type,
                 inference_mode=False,
                 target_modules=target_modules,
