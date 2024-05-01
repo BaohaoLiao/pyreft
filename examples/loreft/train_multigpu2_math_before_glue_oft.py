@@ -322,7 +322,7 @@ def main():
         logger.info(f"Initialize OFT in the default way")
         target_modules = model_args.target_modules.split(";")
         feedforward_modules = model_args.feedforward_modules.split(";")
-        logger.info(f"Add adapter to {target_modules} with {feedforward_modules} before")
+        logger.info(f"Add adapter to {target_modules}")
 
         if data_args.task =="glue":
             task_type = TaskType.SEQ_CLS
@@ -341,11 +341,21 @@ def main():
                 init_weights=True,
             )
         elif data_args.adapter_type == "ia3":
+            if "roberta_base" in model_args.model_name_or_path:
+                target_modules = ".*layer.(0|1|2|3|4|5|6|7|8|9|10|11).(attention.self.key|attention.self.value|output.dense)"
+                feedforward_modules = ".*layer.(0|1|2|3|4|5|6|7|8|9|10|11).output.dense"
+            elif "roberta_large" in model_args.model_name_or_path:
+                target_modules = ".*layer.(0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23).(attention.self.key|attention.self.value|output.dense)"
+                feedforward_modules = ".*layer.(0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23).output.dense"
+            else:
+                feedforward_modules = model_args.feedforward_modules.split(";")
+            logger.info(f"Add adapter before {feedforward_modules}")
+
             peft_config = IA3Config(
                 task_type=task_type,
                 inference_mode=False,
-                #target_modules=target_modules,
-                #feedforward_modules=feedforward_modules,
+                target_modules=target_modules,
+                feedforward_modules=feedforward_modules,
                 init_ia3_weights=True,
             )
         else:
