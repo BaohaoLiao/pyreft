@@ -344,8 +344,8 @@ def main():
             peft_config = IA3Config(
                 task_type=task_type,
                 inference_mode=False,
-                target_modules=target_modules,
-                feedforward_modules=feedforward_modules,
+                #target_modules=target_modules,
+                #feedforward_modules=feedforward_modules,
                 init_ia3_weights=True,
             )
         else:
