@@ -341,10 +341,10 @@ def main():
                 init_weights=True,
             )
         elif data_args.adapter_type == "ia3":
-            if "roberta_base" in model_args.model_name_or_path:
-                target_modules = ".*layer.(0|1).(attention.self.key|output.dense)"
-                feedforward_modules = ".*layer.(0|1).output.dense"
-            elif "roberta_large" in model_args.model_name_or_path:
+            if "roberta-base" in model_args.model_name_or_path:
+                target_modules = ".*layer.(0|1|2|3|4|5|6|7|8|9|10|11).(attention.self.key|attention.self.value|output.dense)"
+                feedforward_modules = ".*layer.(0|1|2|3|4|5|6|7|8|9|10|11).output.dense"
+            elif "roberta-large" in model_args.model_name_or_path:
                 target_modules = ".*layer.(0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23).(attention.self.key|attention.self.value|output.dense)"
                 feedforward_modules = ".*layer.(0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23).output.dense"
             else:
