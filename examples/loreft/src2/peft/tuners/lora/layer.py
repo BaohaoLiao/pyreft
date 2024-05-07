@@ -404,6 +404,7 @@ class Linear(nn.Module, LoraLayer):
             # no adapter to merge
             return
 
+        sefe_merge = True
         for active_adapter in adapter_names:
             if active_adapter in self.lora_A.keys():
                 base_layer = self.get_base_layer()
@@ -411,9 +412,10 @@ class Linear(nn.Module, LoraLayer):
                     # Note that safe_merge will be slower than the normal merge
                     # because of the copy operation.
                     orig_weights = base_layer.weight.data.clone()
-                    delta_weight = self.get_delta_weight(active_adapter)
+                    cos, sin = self.get_delta_weight(active_adapter)
                     if not self.use_dora[active_adapter]:
-                        orig_weights = orig_weights + delta_weight
+                        rotate_half_w = torch.stack([-orig_weights[..., 1::2], orig_weights[..., ::2]], dim=-1).reshape_as(orig_weights)
+                        orig_weights = cos.unsqueeze(1) * orig_weights + sin.unsqueeze(1) * rotate_half_w
                     else:
                         # handle dora
                         # since delta_weight already includes scaling, set it to 1 here
@@ -482,7 +484,6 @@ class Linear(nn.Module, LoraLayer):
         Args:
             adapter (str):
                 The name of the adapter for which the delta weight should be computed.
-        """
         device = self.lora_B[adapter].weight.device
         dtype = self.lora_B[adapter].weight.dtype
 
@@ -506,8 +507,28 @@ class Linear(nn.Module, LoraLayer):
             # cast back the weights
             self.lora_A[adapter].weight.data = weight_A.to(dtype)
             self.lora_B[adapter].weight.data = weight_B.to(dtype)
+        """
+        device = self.lora_B[adapter].weight.device
+        dtype = self.lora_B[adapter].weight.dtype
+        cast_to_fp32 = device.type == "cpu" and dtype == torch.float16
 
-        return output_tensor
+        weight_A = self.lora_A[adapter].weight
+        weight_B = self.lora_B[adapter].weight  
+        if cast_to_fp32:
+            weight_A = weight_A.float()
+            weight_B = weight_B.float()
+
+        cos = weight_B[0] * weight_A[0].cos()
+        sin = weight_B[1] * weight_A[1].cos()
+
+        if cast_to_fp32:
+            cos = cos.to(dtype=dtype)
+            sin = sin.to(dtype=dtype)
+            # cast back the weights
+            self.lora_A[adapter].weight.data = weight_A.to(dtype)
+            self.lora_B[adapter].weight.data = weight_B.to(dtype)
+
+        return cos, sin
 
     def forward(self, x: torch.Tensor, *args: Any, **kwargs: Any) -> torch.Tensor:
         self._check_forward_args(x, *args, **kwargs)

@@ -31,7 +31,7 @@ task_config = {
             "math_10k"
         ],
         "eval_datasets": [
-            "MultiArith", "gsm8k", "SVAMP", "mawps", "AddSub", "AQuA", "SingleEq", 
+            "gsm8k", "SVAMP", "mawps", "AQuA",
         ],
         "task_prompt_template": alpaca_prompt_no_input_template,
         "trigger_tokens": "### Response:",
