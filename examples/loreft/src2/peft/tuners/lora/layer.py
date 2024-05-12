@@ -404,7 +404,7 @@ class Linear(nn.Module, LoraLayer):
             # no adapter to merge
             return
 
-        sefe_merge = True
+        safe_merge = True
         for active_adapter in adapter_names:
             if active_adapter in self.lora_A.keys():
                 base_layer = self.get_base_layer()
