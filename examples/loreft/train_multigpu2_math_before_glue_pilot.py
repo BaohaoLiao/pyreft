@@ -147,6 +147,7 @@ class ModelArguments:
     feedforward_modules: str = field(default="")
     freeze_lora_B: bool = field(default=False)
     classification_type: str = field(default="original")
+    random_init: bool = field(default=False)
 
 
 @dataclass
@@ -361,10 +362,13 @@ def main():
         finetuning_task=train_dataset_str,
     )
     config.classification_type = model_args.classification_type
-    model = AutoModelForSequenceClassification.from_pretrained(
-        model_args.model_name_or_path,
-        config=config, # just providing the label
-    )
+    if model_args.random_init:
+        model = AutoModelForSequenceClassification(config)
+    else:
+        model = AutoModelForSequenceClassification.from_pretrained(
+            model_args.model_name_or_path,
+            config=config, # just providing the label
+        )
     model.classifier = ClassificationHead(config)
 
     if training_args.gradient_checkpointing:
