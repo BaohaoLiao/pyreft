@@ -148,6 +148,7 @@ class ModelArguments:
     freeze_lora_B: bool = field(default=False)
     classification_type: str = field(default="original")
     random_init: bool = field(default=False)
+    full_ft: bool = field(default=False)
 
 
 @dataclass
@@ -362,14 +363,20 @@ def main():
         finetuning_task=train_dataset_str,
     )
     config.classification_type = model_args.classification_type
-    if model_args.random_init:
-        model = AutoModelForSequenceClassification.from_config(config)
-    else:
+    if model_args.full_ft:
         model = AutoModelForSequenceClassification.from_pretrained(
-            model_args.model_name_or_path,
-            config=config, # just providing the label
-        )
-    model.classifier = ClassificationHead(config)
+                model_args.model_name_or_path,
+                config=config, # just providing the label
+            )
+    else:
+        if model_args.random_init:
+            model = AutoModelForSequenceClassification.from_config(config)
+        else:
+            model = AutoModelForSequenceClassification.from_pretrained(
+                model_args.model_name_or_path,
+                config=config, # just providing the label
+            )
+        model.classifier = ClassificationHead(config)
 
     if training_args.gradient_checkpointing:
         logger.info("Use gradient checkpointing with LoRA.")
@@ -382,13 +389,14 @@ def main():
         model.gradient_checkpointing_enable()
 
     if data_args.task == "glue":
-        for name, param in model.named_parameters():
-            param.requires_grad = False
+        if not model_args.full_ft:
+            for name, param in model.named_parameters():
+                param.requires_grad = False
 
-        for param in model.classifier.parameters():
-            param.requires_grad = True
+            for param in model.classifier.parameters():
+                param.requires_grad = True
         
-        logger.info("Make the classifier head trainable.")
+            logger.info("Make the classifier head trainable.")
         
     total_params = sum(p.numel() for p in model.parameters())
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
