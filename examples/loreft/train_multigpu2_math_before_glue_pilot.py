@@ -365,7 +365,6 @@ def main():
         model_args.model_name_or_path,
         config=config, # just providing the label
     )
-    logger.info(model)
     model.classifier = ClassificationHead(config)
 
     if training_args.gradient_checkpointing:
@@ -382,7 +381,7 @@ def main():
         for name, param in model.named_parameters():
             param.requires_grad = False
 
-        for param in model.model.classifier.parameters():
+        for param in model.classifier.parameters():
             param.requires_grad = True
         
         logger.info("Make the classifier head trainable.")
