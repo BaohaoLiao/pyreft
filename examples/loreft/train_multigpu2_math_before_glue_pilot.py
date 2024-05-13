@@ -64,7 +64,6 @@ class ClassificationHead(nn.Module):
         x = features[:, 0, :]
 
         if self.type == "original":
-            print("Hi")
             x = self.dense(x)
             x = torch.tanh(x)
             x = self.dropout(x)
