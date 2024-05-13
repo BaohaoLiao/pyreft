@@ -365,7 +365,7 @@ def main():
         model_args.model_name_or_path,
         config=config, # just providing the label
     )
-    model.classifier = ClassificationHead(config)
+    model.model.classifier = ClassificationHead(config)
 
     if training_args.gradient_checkpointing:
         logger.info("Use gradient checkpointing with LoRA.")
