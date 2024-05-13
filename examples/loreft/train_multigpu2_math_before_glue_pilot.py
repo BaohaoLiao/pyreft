@@ -363,7 +363,7 @@ def main():
     )
     config.classification_type = model_args.classification_type
     if model_args.random_init:
-        model = AutoModelForSequenceClassification(config)
+        model = AutoModelForSequenceClassification.from_config(config)
     else:
         model = AutoModelForSequenceClassification.from_pretrained(
             model_args.model_name_or_path,
