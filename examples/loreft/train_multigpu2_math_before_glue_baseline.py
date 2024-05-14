@@ -391,7 +391,7 @@ def main():
             lora_alpha=64,
             lora_dropout=0.05,
             use_dora=model_args.use_dora,
-            target_modules=["q_proj", "k_proj", "v_proj", "up_proj", "down_proj"],
+            target_modules=["q_proj", "v_proj"],
             init_lora_weights=True,
         )
     elif model_args.adapter_name == "prefix-tuning":
