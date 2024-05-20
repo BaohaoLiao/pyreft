@@ -167,6 +167,9 @@ class Linear(nn.Module, IA3Layer):
                 dtype = self.ia3_l[active_adapter].dtype
                 ia3_scaling *= self.ia3_l[active_adapter].flatten()
 
+            bs = x.size(0)
+            ia3_scaling = ia3_scaling.repeat(bs, 1).unsqueeze(1)
+
             if self.is_feedforward:
                 x = x.to(dtype)
                 # TODO: weight.dtype can be != self.ia3_l[self.active_adapters].dtype
