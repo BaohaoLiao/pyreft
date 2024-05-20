@@ -513,7 +513,7 @@ class Linear(nn.Module, LoraLayer):
                 x = x.to(lora_A.weight.dtype)
 
                 bs = x.size(0)
-                lora_As = lora_A.weight.flatten().repeat(bs, 1).unsqueeze(1)
+                lora_Bs = lora_B.weight.flatten().repeat(bs, 1).unsqueeze(1)
                 #lora_Bs = lora_B.weight.T.repeat(bs, 1, 1)
 
                 if not self.use_dora[active_adapter]:
@@ -521,7 +521,7 @@ class Linear(nn.Module, LoraLayer):
                     #result_a = torch.bmm(x, lora_As)
                     #result_b = torch.bmm(result_a, lora_Bs)
                     #result = result + result_b
-                    result = result * lora_As
+                    result = result * lora_Bs
                 else:
                     x = dropout(x)
                     result = result + self._apply_dora(x, lora_A, lora_B, scaling, active_adapter)
