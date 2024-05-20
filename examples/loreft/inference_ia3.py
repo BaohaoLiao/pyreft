@@ -5,7 +5,7 @@ import time
 from tqdm import tqdm
 import fire
 
-from src_inference_ia3.peft import TaskType, LoRAConfig, get_peft_model
+from src_inference_ia3.peft import TaskType, LoraConfig, get_peft_model
 
 def main(model_size="7b", bs=8):
     if model_size == "13b":
@@ -26,7 +26,7 @@ def main(model_size="7b", bs=8):
     target_modules = [
         "q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"
     ]
-    peft_config = LoRAConfig(
+    peft_config = LoraConfig(
         task_type=TaskType.CAUSAL_LM,
         inference_mode=True,
         r=1,
