@@ -7,7 +7,7 @@ import fire
 
 from src_inference.peft import TaskType, IA3Config, get_peft_model
 
-def main(rank, model_size="7b", bs=8):
+def main(model_size="7b", bs=8):
     if model_size == "13b":
         model_name_or_path = "yahma/llama-13b-hf"
     else:
