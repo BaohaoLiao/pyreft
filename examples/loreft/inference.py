@@ -39,13 +39,13 @@ def main(rank, model_size="7b", bs=8):
     inputs = tokenizer([""] * bs, return_tensors="pt").to(device)
     print("Input size:", inputs.input_ids.size())
 
-    samples = 4
+    samples = 16
     max_new_tokens = 1024
     start = time.time()
     for i in tqdm(range(samples)):
         outputs = model.generate(**inputs, max_new_tokens=max_new_tokens)
     end = time.time()
-    print(max_new_tokens * samples / (end - start)) 
+    print(max_new_tokens * samples * bs / (end - start)) 
 
 
 if __name__ == "__main__":
