@@ -518,8 +518,18 @@ class Linear(nn.Module, LoraLayer):
 
                 if not self.use_dora[active_adapter]:
                     #result = result + lora_B(lora_A(dropout(x))) * scaling
-                    result_a = torch.bmm(x, lora_As)
-                    result_b = torch.bmm(result_a, lora_Bs)
+                    result_as = []
+                    result_bs = []
+                    for i in range(bs):
+                        result_as.append(lora_A(x[i]))
+
+                    for i in range(bs):
+                        result_bs.append(lora_B(result_as[i]))
+
+                    result_b = torch.stack(result_bs, dim=0)
+
+                    #result_a = torch.bmm(x, lora_As)
+                    #result_b = torch.bmm(result_a, lora_Bs)
                     result = result + result_b
                 else:
                     x = dropout(x)
