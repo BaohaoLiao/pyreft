@@ -5,9 +5,9 @@ import time
 from tqdm import tqdm
 import fire
 
-from src_inference.peft import TaskType, LoraConfig, get_peft_model
+from src_inference_road.peft import TaskType, LoraConfig, get_peft_model
 
-def main(rank, model_size="7b", bs=8, new_tokens=1024):
+def main(model_size="7b", bs=8, new_tokens=1024):
     if model_size == "13b":
         model_name_or_path = "yahma/llama-13b-hf"
     else:
@@ -26,14 +26,14 @@ def main(rank, model_size="7b", bs=8, new_tokens=1024):
     target_modules = [
         "q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"
     ]
-    lora_config = LoraConfig(
+    peft_config = LoraConfig(
         task_type=TaskType.CAUSAL_LM,
         inference_mode=True,
-        r=rank,
+        r=1,
         target_modules=target_modules,
         init_lora_weights=True,
     )
-    model = get_peft_model(model, lora_config)
+    model = get_peft_model(model, peft_config)
     print(model)
 
     inputs = tokenizer([""] * bs, return_tensors="pt").to(device)

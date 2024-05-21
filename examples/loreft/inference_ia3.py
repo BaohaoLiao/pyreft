@@ -39,7 +39,7 @@ def main(model_size="7b", bs=8, new_tokens=1024):
     inputs = tokenizer([""] * bs, return_tensors="pt").to(device)
     print("Input size:", inputs.input_ids.size())
 
-    samples = 16
+    samples = 8
     max_new_tokens = new_tokens
     start = time.time()
     for i in tqdm(range(samples)):
