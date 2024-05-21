@@ -7,7 +7,7 @@ import fire
 
 from src_inference.peft import TaskType, LoraConfig, get_peft_model
 
-def main(rank, model_size="7b", bs=8):
+def main(rank, model_size="7b", bs=8, new_tokens=1024):
     if model_size == "13b":
         model_name_or_path = "yahma/llama-13b-hf"
     else:
@@ -40,7 +40,7 @@ def main(rank, model_size="7b", bs=8):
     print("Input size:", inputs.input_ids.size())
 
     samples = 16
-    max_new_tokens = 1024
+    max_new_tokens = new_tokens
     start = time.time()
     for i in tqdm(range(samples)):
         outputs = model.generate(**inputs, max_new_tokens=max_new_tokens)
