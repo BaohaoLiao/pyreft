@@ -520,7 +520,9 @@ class Linear(nn.Module, LoraLayer):
                     #result_a = torch.bmm(x, lora_As)
                     #result_b = torch.bmm(result_a, lora_Bs)
                     #result = result + result_b
-                    rotate_half_result = torch.stack([-result[..., 1::2], result[..., ::2]], dim=-1).reshape_as(result)
+                    half_hidden_size = result.shape[-1] // 2
+                    rotate_half_result = torch.cat((-result[..., half_hidden_size:], result[..., :half_hidden_size]), dim=-1)
+                    #torch.stack([-result[..., 1::2], result[..., ::2]], dim=-1).reshape_as(result)
                     result = result * lora_Bs + rotate_half_result * lora_Bs
                 else:
                     x = dropout(x)
