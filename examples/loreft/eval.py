@@ -308,7 +308,7 @@ def main():
         else:
             lora_config = LoraConfig(
                 task_type=task_type,
-                inference_mode=False,
+                inference_mode=True,
                 r=model_args.lora_rank,
                 lora_alpha=8,
                 lora_dropout=0.,
