@@ -79,7 +79,7 @@ class ModelArguments:
     )
     adapter_name_or_path: str = field(default=None)
     lora_rank: int = field(default=8)
-    lora_alpha: int = field(default=8)
+    lora_alpha: float = field(default=8)
     target_modules: str = field(default="q_proj;k_proj;v_proj;o_proj;up_proj;down_proj;gate_proj")
     feedforward_modules: str = field(default="")
 
