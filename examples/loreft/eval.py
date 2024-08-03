@@ -134,7 +134,7 @@ def main():
             FutureWarning,
         )
         if model_args.token is not None:
-            raise ValueError("`token` and `use_auth_token` are both specified. Please set only the argument `token`.")
+            raise ValueError("`token` and `use_auth_token` are both specified. Please set only the argument `token`")
         model_args.token = model_args.use_auth_token
 
     assert data_args.task in {"commonsense", "math", "alpaca", "instruct", "ultrafeedback", "glue", "gsm8k"}
