@@ -395,8 +395,12 @@ def main():
     model.print_trainable_parameters()
 
     if data_args.task == "glue":
-        for param in model.model.classifier.parameters():
-            param.requires_grad = True
+        if "t5" in model_args.model_name_or_path:
+            for param in model.model.classification_head.parameters():
+                param.requires_grad = True
+        else:
+            for param in model.model.classifier.parameters():
+                param.requires_grad = True
         logger.info("Make the classifier head trainable.")
         model.print_trainable_parameters()
 
