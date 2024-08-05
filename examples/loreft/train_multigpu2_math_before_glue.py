@@ -337,7 +337,7 @@ def main():
         model.gradient_checkpointing_enable()
 
     # PEFT
-    if model_args.adapter_name_or_path is not None:
+    if (model_args.adapter_name_or_path is not None) and ("t5" not in model_args.model_name_or_path):
         logger.info(f"Initialize LoRA from {model_args.adapter_name_or_path}")
         model = PeftModel.from_pretrained(
             model,
@@ -384,6 +384,11 @@ def main():
     #for name, p in model.named_parameters():
     #    if  p.requires_grad:
     #        print(name)
+
+    if (model_args.adapter_name_or_path is not None) and ("t5" in model_args.model_name_or_path):
+        logger.info(f"Load finetuned adapter from {model_args.adapter_name_or_path}.")
+        adapter_dicts = torch.load(f"{model_args.adapter_name_or_path}/adapter.bin")
+        model.load_state_dict(adapter_dicts, strict=False)
 
     if model_args.freeze_lora_B:
         for name, param in model.named_parameters():
